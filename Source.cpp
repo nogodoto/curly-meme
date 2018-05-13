@@ -62,6 +62,9 @@ void enc1_bin()
 
 int main()
 {
+
+
+	BmpHeader header;
 	string FILE = "C:/Tyler/source/repos/ArithmeticEncoding/image.bmp";  //enter filepath of image here
 	ifstream inFile;
 	inFile.open(FILE);
@@ -70,6 +73,7 @@ int main()
 		void inputHeaderhelper(ifstream &inFile, BmpHeader &header);
 
 	}
+	cout <<"File size prior to compression is"<< PrintSIZE(header)<< "bytes" << endl;
 
 	string soFar = "";
 	enc1_interv(interval, 0, soFar);
@@ -90,8 +94,8 @@ void inputHeaderhelper(ifstream &inFile, BmpHeader &header)
 
 
 }
-void ReadInputFile(string FILE, string bufferIMG[])
+int PrintSIZE(BmpHeader header)
 {
-	
+	cout << header.fileSize;
 
 }
