@@ -14,70 +14,29 @@ const int CODE_SIZE = 16;
 int D[DICT_SIZE] = { 0, 1, 2 }; // Dictionary of symbols
 double P[DICT_SIZE] = { 0.2, 0.4, 0.4 }; //Probability set
 double CA[DICT_SIZE] = { 0, 0.2, 0.6 }; //Cumulative probabilities set lower
-double CB[DICT_SIZE] = { 0.2, 0.6, 1.0}; //Cumulative probabilities set higher
+double CB[DICT_SIZE] = { 0.2, 0.6, 1.0 }; //Cumulative probabilities set higher
 int S[DICT_SIZE] = { 2, 1, 0 }; //Source file
 int S_EOF = 0; //End of file symbol for S
 bitset<CODE_SIZE> B;
+int PA[3];  //Adaptive probability
+int adaptiveStats(int bit, int i)//determines forecasted probability for bit positions
+{
+	int scale_factor = 4096;
+	int probFor1 = scale_factor/2.0;
+	if (bit == 0)
+	{
+		probFor1 = probFor1 >> 5;
+	}
+	else
+	{
+		probFor1 = (scale_factor - probFor1) >> 5;
+	}
 
-//void enc1_intervLoop(Range r, int sPos, string soFar)
-//{
-//	double range = r._high - r._low;
-//	for (int i = 0; i < DICT_SIZE; i++)
-//	{
-//		if (D[i] == S[sPos])
-//		{
-//			r = Range(r._low + range*cumP[i], r._low + range*cumP[i+1]);
-//			soFar = soFar + to_string(S[sPos]) + " ";
-//			cout << r._low << ", " << r._high << endl << soFar << endl;
-//			enc1_intervLoop(r, sPos + 1, soFar);
-//
-//		}
-//	}
-//}
+	PA[i] = probFor1;
+	
 
-//void enc1_interv(Range r, int sPos, string soFar)
-//{
-//	if (sPos > 4)
-//	{
-//		interval = Range(r._low, r._high);
-//		return;
-//	}
-//	long double range = r._high - r._low;
-//	
-//	r = Range(r._low + range*cumP[S[sPos]], r._low + range*cumP[S[sPos] + 1]);
-//	soFar = soFar + to_string(S[sPos]);
-//	/*r.setLow(r._low + range*cumP[S[sPos]]);
-//	r.setHigh(r._low + range*cumP[S[sPos] + 1]);*/
-//	cout << setprecision(9) << "r: " << r._low << ", " << r._high << endl << soFar << endl;
-//
-//	enc1_interv(r, sPos + 1, soFar);
-//}
 
-//void enc1_bin(Range AB, Range binInterv, string binCode)
-//{
-//	if (AB._high > binInterv._high && AB._low <= binInterv._low)
-//	{
-//		return;
-//	}
-//	long double mid = (binInterv._high - binInterv._low) / 2 + binInterv._low;
-//	if (AB._low >= mid)
-//	{
-//		binInterv = Range(mid, binInterv._high);
-//		binCode = binCode + "1";
-//	}
-//	else if (AB._high < mid)
-//	{
-//		binInterv = Range(binInterv._low, mid);
-//		binCode = binCode + "0";
-//	}
-//	else if (AB._low <= mid && AB._high > mid)
-//	{
-//
-//	}
-//
-//	cout << "binInterv: " << binInterv._low << ", " << binInterv._high << endl << "binCode: " << binCode << endl;
-//	enc1_bin(AB, binInterv, binCode);
-//}
+}
 
 //Expands binary fraction for use in decoding
 long double expandBitset()
@@ -101,7 +60,8 @@ string encode_inf()
 	for (int i = 0; i < DICT_SIZE; i++)
 	{
 		long double w = b - a; //width
-		b = a + w * CB[S[i]];
+		//int adaptiveStats(int bit, int i);
+		b = a + w * CB[S[i]]; //PA[S[i]]
 		a = a + w * CA[S[i]];
 	}
 	//cout << a << ", " << b << endl;
@@ -116,7 +76,7 @@ string encode_inf()
 		if (b <0.5) //Case 0
 		{
 			binCode = binCode + "0"; //Emit 0
-			//cout << "Case 0 : " << binCode << endl;
+									 //cout << "Case 0 : " << binCode << endl;
 			a = 2 * a;
 			b = 2 * b;
 		}
@@ -204,7 +164,7 @@ int main()
 	cout << "Encoded: " << encode_inf() << endl;
 
 
-	
+
 
 	cout << "Bitset: " << B << endl;
 
@@ -213,4 +173,5 @@ int main()
 
 	system("PAUSE");
 	return 0;
+
 }
